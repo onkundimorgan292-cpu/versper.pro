@@ -1,49 +1,53 @@
-<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width"><title>Deriv Broker - All Options + Bot</title><style>body{background:#0e0e0e;color:#fff;font-family:Inter,sans-serif} .card{background:#1a1a1a;border:1px solid #2e2e2e;border-radius:12px;padding:12px;margin:6px} .trade-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px} .btn{padding:12px;border-radius:8px;border:none;cursor:pointer} .btn-rise{background:#4bb950;color:#fff} .btn-fall{background:#ff444f;color:#fff} canvas{background:#fff;border-radius:12px} .tab{padding:8px 16px;border-radius:20px;background:#2e2e2e;color:#fff;cursor:pointer;display:inline-block;margin:4px} .tab.active{background:#ff444f} .bottom-nav{position:fixed;bottom:0;left:0;right:0;display:flex;justify-content:space-around;background:#1a1a1a;padding:12px;border-top:1px solid #2e2e2e} </style></head><body>
-<header style="padding:16px;display:flex;justify-content:space-between;align-items:center;background:#1a1a1a"><div style="color:#ff444f;font-weight:900;font-size:22px">DERIV</div><div><span style="background:#2e2e2e;padding:6px 12px;border-radius:20px">Real</span> <span>🔔4</span></div></header>
-<div style="padding:12px">
-<div id="tabs"><span class="tab active" onclick="filterTab('trader')">Deriv Trader</span><span class="tab" onclick="filterTab('bot')">Deriv Bot</span><span class="tab" onclick="filterTab('smart')">SmartTrader</span></div>
-<div style="margin-top:12px"><b>Deriv Trader</b></div>
-<div class="trade-grid" id="tradeGrid">
-<div class="card" onclick="selectTrade('risefall')"><div>📈</div><b>Rise/Fall</b></div>
-<div class="card" onclick="selectTrade('higherlower')"><div>⬆️⬇️</div><b>Higher/Lower</b></div>
-<div class="card" onclick="selectTrade('matches')"><div>🔢</div><b>Matches/Differs</b></div>
-<div class="card" onclick="selectTrade('evenodd')"><div>🔢</div><b>Even/Odd</b></div>
-<div class="card" onclick="selectTrade('accu')"><div>📊</div><b>Accumulators</b></div>
-<div class="card" onclick="selectTrade('overunder')"><div>🔢</div><b>Over/Under</b></div>
-<div class="card" onclick="selectTrade('multiplier')"><div>✖️</div><b>Multipliers</b></div>
-<div class="card" onclick="selectTrade('touch')"><div>👆</div><b>Touch/No Touch</b></div>
-<div class="card" onclick="selectTrade('vanilla')"><div>🌿</div><b>Vanillas</b></div>
-<div class="card" onclick="selectTrade('turbo')"><div>⚡</div><b>Turbos</b></div>
-<div class="card" onclick="selectTrade('onlyups')"><div>⬆️</div><b>Only Ups/Only Downs</b></div>
-<div class="card" onclick="selectTrade('hightick')"><div>📍</div><b>High Tick/Low Tick</b></div>
-<div class="card" onclick="selectTrade('ends')"><div>🎯</div><b>Ends Between/Outside</b></div>
-<div class="card" onclick="selectTrade('stays')"><div>🚧</div><b>Stays Between/Goes Outside</b></div>
-<div class="card" onclick="selectTrade('asians')"><div>📈</div><b>Asians</b></div>
-<div class="card" onclick="selectTrade('reset')"><div>🔄</div><b>Reset Call/Put</b></div>
-</div>
-<div id="tradingPanel" style="margin-top:20px;background:#1a1a1a;padding:16px;border-radius:12px;display:none">
-<div style="display:flex;gap:8px;margin-bottom:12px"><select id="marketSelect" style="flex:1;padding:10px;border-radius:8px;background:#2e2e2e;color:#fff;border:none"><option>Volatility 10 Index</option><option>Volatility 15 Index</option><option>Volatility 25 Index</option><option>Volatility 30 Index</option><option>Volatility 50 Index</option><option>Volatility 75 Index</option><option>Volatility 90 Index</option><option>Volatility 100 Index</option><option>Volatility 10 (1s)</option><option>Volatility 25 (1s)</option><option>Volatility 50 (1s)</option><option>Volatility 75 (1s)</option><option>Volatility 100 (1s)</option><option>Jump 10 Index</option><option>Jump 25 Index</option><option>Jump 50 Index</option><option>Jump 75 Index</option><option>Jump 100 Index</option><option>Crash 300 Index</option><option>Crash 500 Index</option><option>Crash 1000 Index</option><option>Boom 300 Index</option><option>Boom 500 Index</option><option>Boom 1000 Index</option><option>Bull Market Index</option><option>Bear Market Index</option><option>USD Basket</option><option>AUD Basket</option></select></div>
-<div style="font-size:28px;font-weight:900" id="priceDisplay">10,000.00 <span style="color:#4bb950" id="changePct">+0.15%</span></div>
-<canvas id="chart" width="800" height="300" style="width:100%;height:300px;background:#fff;border-radius:12px;margin:12px 0"></canvas>
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px"><div><label>Stake (USD)</label><input id="stake" value="10" style="width:100%;padding:12px;border-radius:8px;background:#2e2e2e;color:#fff;border:none"></div><div><label>Duration</label><select id="duration" style="width:100%;padding:12px;border-radius:8px;background:#2e2e2e;color:#fff;border:none"><option>5 ticks</option><option>10 ticks</option><option>1 min</option><option>5 min</option><option>1 hour</option><option>1 day</option></select></div></div>
-<div id="extraInputs" style="margin-top:12px;display:grid;grid-template-columns:1fr 1fr;gap:12px"><div id="barrierBox" style="display:none"><label>Barrier</label><input id="barrier" placeholder="+2" style="width:100%;padding:12px;border-radius:8px;background:#2e2e2e;color:#fff;border:none"></div><div id="digitBox"><label>Last Digit</label><select id="digit" style="width:100%;padding:12px;border-radius:8px;background:#2e2e2e;color:#fff;border:none"><option>0</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option></select></div><div id="growthBox" style="display:none"><label>Growth Rate</label><select id="growth" style="width:100%;padding:12px;border-radius:8px;background:#2e2e2e;color:#fff;border:none"><option>1%</option><option>2%</option><option>3%</option><option>4%</option><option>5%</option></select></div><div id="multiplierBox" style="display:none"><label>Multiplier</label><select id="multiplier" style="width:100%;padding:12px;border-radius:8px;background:#2e2e2e;color:#fff;border:none"><option>x20</option><option>x40</option><option>x60</option><option>x100</option><option>x200</option></select></div></div>
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px"><button class="btn btn-rise" onclick="buy('rise')">Rise ⬆️ <div id="payoutRise">$19.45</div></button><button class="btn btn-fall" onclick="buy('fall')">Fall ⬇️ <div id="payoutFall">$19.20</div></button></div>
-<div style="margin-top:16px;background:#0e0e0e;padding:12px;border-radius:8px"><b>Bot Builder - Same Trade Type</b><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px"><input id="botStake" placeholder="Initial Stake 10" style="padding:10px;background:#2e2e2e;border:none;border-radius:8px;color:#fff"><select id="botStrategy" style="padding:10px;background:#2e2e2e;border:none;border-radius:8px;color:#fff"><option>Martingale</option><option>D'Alembert</option><option>Oscar Grind</option></select></div><div style="margin-top:8px;display:flex;gap:8px"><button onclick="startBot()" style="flex:1;padding:12px;background:#4bb950;color:#fff;border:none;border-radius:8px">Start Bot</button><button onclick="stopBot()" style="flex:1;padding:12px;background:#ff444f;color:#fff;border:none;border-radius:8px">Stop Bot</button></div><div id="botLog" style="margin-top:8px;height:120px;overflow:auto;background:#000;padding:8px;border-radius:8px;font-size:12px">Bot log: Ready...</div></div>
-</div>
-</div>
-<div class="bottom-nav"><div>🏠<br>Home</div><div>📊<br>CFDs</div><div>🔄<br>Exchange</div><div style="color:#ff444f">⚙️<br>Options</div><div>💼<br>Portfolio</div></div>
-<script>
-let ticks=[],price=10000,botRunning=false,botInterval,selectedTrade='risefall';
-const canvas=document.getElementById('chart'),ctx=canvas.getContext('2d');
-function addTick(){const ch=(Math.random()-0.5)*2;price+=ch;ticks.push(price);if(ticks.length>80)ticks.shift();draw();document.getElementById('priceDisplay').innerHTML=price.toFixed(2)+' <span style="color:'+(ch>=0?'#4bb950':'#ff444f')+'">'+(ch>=0?'+':'')+ch.toFixed(2)+'%</span>';}
-function draw(){ctx.clearRect(0,0,800,300);ctx.fillStyle='#fff';ctx.fillRect(0,0,800,300);ctx.strokeStyle='#eee';for(let y=0;y<300;y+=50){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(800,y);ctx.stroke();} if(ticks.length<2)return; const min=Math.min(...ticks),max=Math.max(...ticks),range=max-min||1; ctx.strokeStyle='#ff444f';ctx.lineWidth=2;ctx.beginPath();ticks.forEach((p,i)=>{const x=i*10,yy=280-((p-min)/range)*240; if(i==0)ctx.moveTo(x,yy); else ctx.lineTo(x,yy);});ctx.stroke(); ctx.fillStyle='rgba(255,68,79,0.1)';ctx.lineTo(800,280);ctx.lineTo(0,280);ctx.fill();}
-setInterval(addTick,800);addTick();
-function selectTrade(t){selectedTrade=t;document.getElementById('tradingPanel').style.display='block';document.getElementById('tradeGrid').style.display='none';document.getElementById('barrierBox').style.display=t=='higherlower'||t=='touch'||t=='ends'||t=='stays'?'block':'none';document.getElementById('growthBox').style.display=t=='accu'?'block':'none';document.getElementById('multiplierBox').style.display=t=='multiplier'?'block':'none';window.scrollTo(0,0);}
-function filterTab(tab){document.querySelectorAll('.tab').forEach(el=>el.classList.remove('active'));event.target.classList.add('active');document.getElementById('tradeGrid').style.display='grid';document.getElementById('tradingPanel').style.display='none';}
-function buy(dir){const stake=document.getElementById('stake').value;logBot(`BUY ${dir.toUpperCase()} ${selectedTrade} Stake $${stake} Price ${price.toFixed(2)} - Connecting to wss://ws.derivws.com/websockets/v3?app_id=1089 ...`);try{const ws=new WebSocket('wss://ws.derivws.com/websockets/v3?app_id=1089');ws.onopen=()=>{ws.send(JSON.stringify({authorize:'demo_token'}));ws.send(JSON.stringify({proposal:1,amount:stake,basis:'stake',contract_type:dir=='rise'?'CALL':'PUT',currency:'USD',duration:5,duration_unit:'t',symbol:'R_100'}));logBot('Proposal sent...');};ws.onmessage=(e)=>{logBot('API: '+e.data.slice(0,120));};}catch(e){logBot('Demo Mode: Trade simulated - host file outside preview for real API');}}
-function startBot(){if(botRunning)return;botRunning=true;logBot('Bot Started - Trade Type: '+selectedTrade+' - Martingale active');let stake=parseFloat(document.getElementById('botStake').value||10);botInterval=setInterval(()=>{if(!botRunning)return;const dir=Math.random()>0.5?'rise':'fall';buy(dir);logBot(`Bot auto-buy ${dir} stake $${stake}`);if(Math.random()<0.5){stake*=2.1;logBot(`Loss -> Martingale new stake $${stake.toFixed(2)}`);}else{stake=parseFloat(document.getElementById('botStake').value||10);logBot(`Win -> Reset stake $${stake}`);}},5000);}
-function stopBot(){botRunning=false;clearInterval(botInterval);logBot('Bot Stopped');}
-function logBot(m){const l=document.getElementById('botLog');l.innerHTML+=`<div>${new Date().toLocaleTimeString()} ${m}</div>`;l.scrollTop=l.scrollHeight;}
-let wsTick;try{wsTick=new WebSocket('wss://ws.derivws.com/websockets/v3?app_id=1089');wsTick.onopen=()=>{wsTick.send(JSON.stringify({ticks:'R_100',subscribe:1}));logBot('Real Deriv feed connected!');};wsTick.onmessage=(e)=>{try{const d=JSON.parse(e.data);if(d.tick){price=d.tick.quote;ticks.push(price);if(ticks.length>80)ticks.shift();draw();}}catch{}};}catch(e){logBot('Simulated feed - download file for real feed');}
-</script>
-</body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Deriv Market Data Demo</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; background: #f4f4f9; }
+        .card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); max-width: 400px; }
+        #price { font-size: 2em; font-weight: bold; color: #2a9d8f; }
+        #status { color: #666; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>Deriv Live Price</h1>
+        <div id="status">Connecting...</div>
+        <div>Symbol: <strong>Volatility 100 Index (1HZ100V)</strong></div>
+        <div id="price">--</div>
+    </div>
+
+    <script>
+        // Public endpoint, no token required
+        const ws = new WebSocket('wss://api.derivws.com/trading/v1/options/ws/public');
+
+        ws.onopen = () => {
+            document.getElementById('status').textContent = 'Connected (Public)';
+            // Subscribe to tick data
+            ws.send(JSON.stringify({
+                ticks: '1HZ100V',
+                subscribe: 1,
+                req_id: 1
+            }));
+        };
+
+        ws.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+            if (data.msg_type === 'tick') {
+                const price = data.tick.quote;
+                document.getElementById('price').textContent = price;
+            }
+        };
+
+        ws.onerror = (err) => {
+            document.getElementById('status').textContent = 'Error';
+            console.error(err);
+        };
+
+        ws.onclose = () => {
+            document.getElementById('status').textContent = 'Disconnected';
+        };
+    </script>
+</body>
+</html>
